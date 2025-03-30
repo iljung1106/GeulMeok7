@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeulMeok7 - 소설 작성 도우미</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>GeulMeok7</h1>
+            <h2>AI 소설 작성 도우미</h2>
+            <nav>
+                <ul>
+                    <li><a href="#" class="nav-link active" data-section="editor">에디터</a></li>
+                    <li><a href="#" class="nav-link" data-section="files">파일 관리</a></li>
+                    <li><a href="#" class="nav-link" data-section="settings">설정</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Editor Section -->
+            <section id="editor" class="section active">
+                <div class="editor-container">
+                    <div class="prompt-section">
+                        <h3>시스템 인스트럭션</h3>
+                        <div class="template-controls">
+                            <select id="template-select">
+                                <option value="">템플릿 선택...</option>
+                            </select>
+                            <button id="load-template-btn">불러오기</button>
+                            <button id="save-template-btn">저장하기</button>
+                            <button id="delete-template-btn">삭제하기</button>
+                        </div>
+                        <textarea id="system-instructions" placeholder="AI에게 전체적인 지시사항을 입력하세요. (예: '당신은 판타지 소설 작가입니다. 중세 판타지 세계관에서 모험을 다루는 이야기를 작성해주세요.')"></textarea>
+                    </div>
+
+                    <div class="prompt-section">
+                        <h3>상단 프롬프트</h3>
+                        <textarea id="upper-prompt" placeholder="본문 앞에 추가될 내용을 입력하세요. (예: '다음은 주인공이 마법사와 처음 만나는 장면입니다.')"></textarea>
+                    </div>
+
+                    <div class="context-section">
+                        <h3>요약 컨텍스트 파일</h3>
+                        <p class="setting-description">선택된 파일은 보조 모델로 요약된 후 메인 요청에 포함됩니다.</p>
+                        <div id="summarized-context-container">
+                            <div id="summarized-context-files-list"></div>
+                        </div>
+                    </div>
+
+                    <div class="context-section">
+                        <h3>컨텍스트 파일</h3>
+                        <div id="context-files-container">
+                            <div id="context-files-list"></div>
+                        </div>
+                    </div>
+
+                    <div class="prompt-section">
+                        <h3>메인 프롬프트</h3>
+                        <textarea id="main-prompt" placeholder="AI에게 요청할 주요 내용을 입력하세요. (예: '주인공이 숲에서 길을 잃고 갑자기 마법사를 만나는 장면을 작성해주세요.')"></textarea>
+                    </div>
+
+                    <div class="prompt-section">
+                        <h3>하단 프롬프트</h3>
+                        <textarea id="lower-prompt" placeholder="본문 뒤에 추가될 내용을 입력하세요. (예: '이 장면은 긴장감 있게 작성해주세요.')"></textarea>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button id="generate-btn" class="primary-btn">생성하기</button>
+                        <button id="save-response-btn">응답 저장하기</button>
+                    </div>
+
+                    <div class="response-section">
+                        <h3>AI 응답</h3>
+                        <div id="loading-indicator" class="hidden">
+                            <div class="spinner"></div>
+                            <p>AI가 생성 중입니다...</p>
+                        </div>
+                        <div id="response-container"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Files Section -->
+            <section id="files" class="section">
+                <div class="files-container">
+                    <div class="file-actions">
+                        <h3>파일 관리</h3>
+                        <div class="file-controls">
+                            <input type="text" id="new-file-name" placeholder="새 파일 이름 (예: 1화.txt)">
+                            <button id="create-file-btn">새 파일 생성</button>
+                        </div>
+                    </div>
+
+                    <div class="file-list-container">
+                        <h3>파일 목록</h3>
+                        <p class="setting-description">파일을 드래그하여 순서를 변경할 수 있습니다.</p>
+                        <div id="file-list" class="sortable-list">
+                            <p>파일을 불러오는 중...</p>
+                        </div>
+                    </div>
+
+                    <div class="file-editor">
+                        <h3>파일 내용</h3>
+                        <div class="file-editor-header">
+                            <span id="current-file-name">파일을 선택하세요</span>
+                            <div class="file-editor-controls">
+                                <button id="save-file-btn" disabled>저장</button>
+                                <button id="delete-file-btn" disabled>삭제</button>
+                                <button id="summarize-file-btn" disabled>요약하기</button>
+                            </div>
+                        </div>
+                        <textarea id="file-content" placeholder="파일을 선택하면 내용이 여기에 표시됩니다." disabled></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="section">
+                <div class="settings-container">
+                    <h3>AI 설정</h3>
+                    <div class="setting-group">
+                        <label for="api-key">Google AI Studio API 키</label>
+                        <input type="password" id="api-key" placeholder="API 키를 입력하세요">
+                        <p class="setting-description">Google AI Studio에서 발급받은 API 키를 입력하세요.</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="model-select">AI 모델</label>
+                        <select id="model-select">
+                            <option value="gemini-pro">Gemini Pro</option>
+                            <option value="gemini-pro-vision">Gemini Pro Vision</option>
+                            <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro (Experimental)</option>
+                            <option value="gemini-2.0-flash-thinking-exp-01-21">Gemini 2.0 Flash Thinking (Experimental)</option>
+                            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                        </select>
+                        <p class="setting-description">사용할 AI 모델을 선택하세요.</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="secondary-model-select">보조 모델</label>
+                        <select id="secondary-model-select">
+                            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                            <option value="gemini-pro">Gemini Pro</option>
+                            <option value="gemini-pro-vision">Gemini Pro Vision</option>
+                            <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro (Experimental)</option>
+                            <option value="gemini-2.0-flash-thinking-exp-01-21">Gemini 2.0 Flash Thinking (Experimental)</option>
+                        </select>
+                        <p class="setting-description">요약 컨텍스트 파일을 처리할 보조 모델을 선택하세요.</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="temperature">Temperature: <span id="temperature-value">0.7</span></label>
+                        <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7">
+                        <p class="setting-description">낮을수록 일관된 응답, 높을수록 창의적인 응답이 생성됩니다.</p>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="top-p">Top-P: <span id="top-p-value">0.95</span></label>
+                        <input type="range" id="top-p" min="0" max="1" step="0.05" value="0.95">
+                        <p class="setting-description">낮을수록 더 확실한 응답, 높을수록 다양한 응답이 생성됩니다.</p>
+                    </div>
+
+                    <button id="save-settings-btn" class="primary-btn">설정 저장</button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>GeulMeok7 - Google AI Studio API를 활용한 소설 작성 도우미</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
