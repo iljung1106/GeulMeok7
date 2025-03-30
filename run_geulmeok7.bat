@@ -1,45 +1,46 @@
 @echo off
+chcp 65001 > nul
 echo ===================================================
-echo GeulMeok7 소설 작성 도우미 시작하기
+echo GeulMeok7 Novel Writing Assistant
 echo ===================================================
 echo.
 
-:: 필요한 디렉토리 생성
+:: Create necessary directories
 if not exist "data" mkdir data
 if not exist "data\templates" mkdir data\templates
 
-:: Python 설치 확인
+:: Check Python installation
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo Python이 설치되어 있지 않습니다.
-    echo Python을 설치한 후 다시 시도해주세요. (https://www.python.org/downloads/)
+    echo Python is not installed.
+    echo Please install Python from https://www.python.org/downloads/
     echo.
     pause
     exit /b
 )
 
-:: 필요한 패키지 설치
-echo 필요한 패키지를 설치합니다...
+:: Install required packages
+echo Installing required packages...
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 if %errorlevel% neq 0 (
-    echo 패키지 설치 중 오류가 발생했습니다.
+    echo Error installing packages.
     pause
     exit /b
 )
 
 echo.
-echo 설치가 완료되었습니다.
+echo Installation complete.
 echo.
 echo ===================================================
-echo GeulMeok7 소설 작성 도우미를 시작합니다...
+echo Starting GeulMeok7 Novel Writing Assistant...
 echo.
-echo 웹 브라우저에서 http://127.0.0.1:5000 으로 접속하세요.
-echo 종료하려면 이 창에서 Ctrl+C를 누르세요.
+echo Access the application at http://127.0.0.1:5000
+echo Press Ctrl+C in this window to exit.
 echo ===================================================
 echo.
 
-:: 애플리케이션 실행
+:: Run the application
 python app.py
 
 pause
