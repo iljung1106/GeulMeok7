@@ -42,6 +42,40 @@ GeulMeok7은 Google AI Studio API를 활용한 소설 작성 도우미 애플리
 
 4. 웹 브라우저에서 http://127.0.0.1:5000 으로 접속합니다.
 
+### Docker를 사용한 설치 및 실행
+
+#### Docker로 실행하기
+
+1. Docker 이미지를 빌드하고 실행:
+   ```bash
+   docker build -t geulmeok7 .
+   docker run -p 5000:5000 -v $(pwd)/data:/app/data geulmeok7
+   ```
+
+#### Docker Compose로 실행하기
+
+1. Docker Compose를 사용하여 실행:
+   ```bash
+   docker-compose up --build
+   ```
+
+2. 백그라운드에서 실행하려면:
+   ```bash
+   docker-compose up -d
+   ```
+
+3. 로그 확인:
+   ```bash
+   docker-compose logs -f
+   ```
+
+4. 서비스 중지:
+   ```bash
+   docker-compose down
+   ```
+
+Docker를 사용할 경우에도 웹 브라우저에서 http://127.0.0.1:5000 으로 접속하여 사용할 수 있습니다. API 키는 Docker Compose 파일에서 환경 변수로 설정하거나, 웹 인터페이스의 설정 탭에서 직접 입력할 수 있습니다.
+
 ### 초기 설정
 
 1. '설정' 탭으로 이동합니다.
